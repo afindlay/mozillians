@@ -1239,6 +1239,22 @@ class LdapAdminsUserTests(unittest.TestCase):
             self.ldap_sys999.search_s(ldap_sys999DN,ldap.SCOPE_BASE,'(objectclass=*)')
 
 
+    def test_T2070_ldapadmin_read_all_accounts(self):
+
+	# WARNING: this will take a long time if run on a server with a lot of entries
+	#          It may also cause memory exhaustion.
+        try:
+	    res = self.ldap_sys999.search_s(
+	            people_node,
+		    ldap.SCOPE_SUBTREE,
+		    filterstr='(objectclass=*)',
+		    attrlist=['*','+']
+		    )
+        except ldap.LDAPError:
+	    self.fail( "LDAP Admin cannot enumerate the whole set of users " +
+	            str(sys.exc_info()[0]) )
+
+
 class RegistrationAgentTests(unittest.TestCase):
 
     # These tests require a system user in the RegistrationAgent group
