@@ -1474,6 +1474,7 @@ cn: Andrew Findlay
 displayName: Andrew Findlay
 userPassword: {SSHA}XQMx6I1GIBejo8hnDcHcSdCk2jKcZqRn
 description: LDAP designer
+mozilliansVouchedBy: uniqueIdentifier=1,ou=people,dc=mozillians,dc=org
 mail: andrew.findlay@skills-1st.co.uk
 uid: afindlay
 
