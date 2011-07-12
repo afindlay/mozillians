@@ -722,7 +722,7 @@ jpegPhoto:: /9j/4AAQSkZJRgABAQAAAQABAAD//gA8Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2lu
  G8vyzsxzjgnBIzXe5NTl2utP+3YnkQw7rptS5WmlZtLqm9/XzP/ZCg==
 title: Tour Guide
 telephoneNumber: +1 555 543 2100
-uid: 101
+uid: davidboswell
 
 dn: uniqueIdentifier=3,ou=people,dc=mozillians,dc=org
 objectClass: inetOrgPerson
@@ -1452,7 +1452,7 @@ cn: Åke Wadensjöö
 displayName: Åke Wadensjöö
 userPassword: secret
 description: Ne révèle pas le dénouement SVP. $ Se upp för nationella tecken $ Uważaj na znaki narodowe $ احترس من الشخصيات الوطنية
-uid: 105
+uid: Åke
 
 dn: uniqueIdentifier=7,ou=people,dc=mozillians,dc=org
 objectClass: inetOrgPerson

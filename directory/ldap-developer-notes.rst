@@ -230,7 +230,7 @@ The user will have supplied a username and password, so the client application
 must issue a search of the form:
 
 base
-    ou=people,dc=mozillians,dc=com
+    ou=people,dc=mozillians,dc=org
 
 scope
     onelevel (preferred) or subtree
@@ -290,7 +290,7 @@ be an error.
 When looking for information about people, searches should be of the form:
 
 base
-    ou=people,dc=mozillians,dc=com
+    ou=people,dc=mozillians,dc=org
 
 scope
     onelevel (preferred) or subtree
