@@ -1,50 +1,34 @@
-===================================
-Welcome to playdoh's documentation!
-===================================
+.. Mozillians documentation master file, created by
+   sphinx-quickstart on Thu Jul 14 14:45:32 2011.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-**Mozilla's Playdoh** is a web application template based on Django_.
+Mozillians
+==========
 
-Patches are welcome! Feel free to fork and contribute to this project on
-Github_.
+Mozillians.org_ is the community phonebook for Mozilla.
 
-.. _Django: http://www.djangoproject.com/
-.. _Github: https://github.com/mozilla/playdoh
+This application is a customized deployment
+of Domesday_ and is built on top of Playdoh_.
 
+.. _Mozillians.org: https://wiki.mozilla.org/Mozillians
+.. _Playdoh: https://github.com/mozilla/playdoh
+.. _Domesday: https://github.com/mozilla/domesday
 
-Features
---------
-Quick and dirty (and probably incomplete) feature list:
-
-* Rich, but "cherry-pickable" features out of the box:
-
-  * Django
-  * jinja2 template engine
-  * Celery support
-  * Simple database migrations
-  * Full localization support
-
-* Secure by default:
-
-  * SHA-512 default password hashing
-  * X-Frame-Options: DENY by default
-  * secure and httponly flags on cookies enabled by default
-
-
-Contents
---------
+Contents:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   gettingstarted
-   libs
-   operations
-   migrations
-   l10n
-   packages
-   docs
-   bestpractices
-
+   installation
+   settings
+   sessions
+   registration
+   invites
+   demo
+   ldap
+   ldap-developer-notes
+   ldap-design
 
 Indices and tables
 ------------------
@@ -52,3 +36,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+

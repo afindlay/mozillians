@@ -1,5 +1,10 @@
+-r ../vendor/src/funfactory/funfactory/requirements/prod.txt
+
 # Django stuff
 -e git://github.com/django/django@36c82ac8#egg=django
+
+# Django Extensions
+-e git://github.com/mozilla/happyforms.git#egg=happyforms
 
 # Templates
 -e git://github.com/jbalogh/jingo.git#egg=jingo
@@ -21,3 +26,9 @@ django-celery
 Babel>=0.9.4
 -e git://github.com/clouserw/tower.git#egg=tower
 -e git://github.com/fwenzel/django-mozilla-product-details#egg=django-mozilla-product-details
+
+# Auth
+django-auth-ldap
+
+# Cache
+python-memcached==1.45

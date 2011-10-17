@@ -1,37 +1,160 @@
-<html>
-<body>
-  {% block header %}
-username={{user.username}}
-auth={{user.is_authenticated() }}
-anon={{user.is_anonymous() }}
+<!doctype html>
+<!--[if lt IE 7 ]> <html class="no-js ie6" lang="{{ LANG }}" dir="{{ DIR }}"> <![endif]-->
+<!--[if IE 7 ]>  <html class="no-js ie7" lang="{{ LANG }}" dir="{{ DIR }}"> <![endif]-->
+<!--[if IE 8 ]>  <html class="no-js ie8" lang="{{ LANG }}" dir="{{ DIR }}"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ LANG }}" dir="{{ DIR }}"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
 
-    <a href="/">Mozillians</a>
-    <div>META - This is the Anonymous case</div>
-    {# if user.is_anonymous #}
-      <p><a href="/login">Log In</a> or <a href="/register">Join Us</a></p>
-    {# else #}
-    <div>META - This is the Authenticated case</div>
-      <p>Welcome, {{ user.username }}. Thanks for logging in.</p>
-      <a href="/u/1">My Profile</a>
-      <a href="/invite">Invite</a>
+  <title>{{ _('Mozillians') }}: {% block page_title %}
+    {{ _('Welcome') }}{% endblock %}</title>
+  <meta name="description" content="{{ _("Mozilla's contributor phonebook") }}">
+  <meta name="author" content="Mozilla">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="apple-touch-icon" href="{{ MEDIA_URL }}apple-touch-icon.png">
+
+  {% block site_css %}
+    {{ css('common') }}
+  {% endblock %}
+
+  <link rel="shortcut icon" type="image/ico" href="{{ MEDIA_URL }}favicon.ico">
+  {% block feeds %}{% endblock %}
+  {% block extra_headers %}{% endblock %}
+</head>
+
+<body id="body-{% block body_id %}mozillians{% endblock %}"
+  class="{% block body_classes %}{% endblock %}
+  {{ 'auth' if user.is_authenticated() else 'anon' }}">
+
+<ul id="skip" class="hide">
+  <li><a href="#main">{{ _('Skip to Content') }}</a></li>
+</ul>
+
+<header id="header">
+  <h1><a href="{{ url('home') }}">{{ _('Mozillians') }}</a></h1>
+
+  <div id="header-contents">
+    <nav id="nav">
+      <ul>
+        {% if user.is_authenticated() %}
+          <li class="first">
+            <a id="profile" href="{{ url('profile', user.unique_id) }}">
+              {{ _('Profile') }}
+            </a>
+          </li>
+          {% if user|vouched %}
+            <li>
+              <a id="invite" href="{{ url('invite') }}">{{ _('Invite') }}</a>
+            </li>
+          {% endif %}
+          <li>
+            <a id="logout" href="{{ url('logout') }}?next={{ url('login') }}">
+              {{ _('Log Out') }}
+            </a>
+          </li>
+        {% else %}
+          <li>
+            <a id="login" href="{{ url('login') }}">{{ _('Log In') }}</a>
+          </li>
+          {% block register_button %}
+            <li>
+              <a id="register" href="{{ url('register') }}">
+                {{ _('Join Us') }}
+              </a>
+            </li>
+          {% endblock %}
+        {% endif %}
+      </ul>
+    </nav>
+
+    {% if user.is_authenticated() and user|vouched %}
       {% block search %}
-        <form action="" method="GET">  
-          <input type="search" name="q" placeholder="{{ _('Name, IRC Nick, or Email') }}" autofocus>
-          <input type="submit" value="{{ _('Search') }}"/>
+        <form id="quick-search" action="{{ url('phonebook.search') }}"
+              method="GET">
+          <input type="search" id="q" name="q"
+                 placeholder="{{ _('Name, IRC Nick, or Email') }}">
+          <button alt="{{ _('Search') }}" type="submit" id="quick-search-btn">{{ _('Search') }}</button>
         </form>
       {% endblock %}
-    {# endif #}
+    {% endif %}
+  </div>
+</header>
 
-    
-  {% endblock %}
+<div id="main">
+  <div id="main-content">
+    {% block messages %}
+      {% if messages %}
+        <ul id="messages">
+          {% for message in messages %}
+            <li {% if message.tags %}class="{{ message.tags }}"{% endif %}>
+              {{ message }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endblock messages %}
 
-  {% block main_content %}
+    {% block main_content %}{% endblock %}
+  </div>
+</div>
 
-  {% endblock %}
+<div id="footer-wrap">
+  <footer id="footer">
+    <a id="logo-footer" href="http://mozilla.org/">
+      <img src="{{ MEDIA_URL }}img/mozilla/logo_footer.png" alt="Mozilla">
+    </a>
 
-  {% block footer %}
-Footer Jazz
-    <a href="/about">About</a>
-  {% endblock %}
+    <div id="copyright">
+      <p id="footer-links">
+        {% block footer_links %}
+          <a href="{{ url('about') }}">
+            {{ _('About Mozillians') }}
+          </a>
+          &nbsp;|&nbsp;
+          <a href="https://wiki.mozilla.org/Mozillians#Get_Involved">
+            {{ _('Get Involved') }}
+          </a>
+          <span id="footer-link-spacer"><br></span>
+          <a href="http://www.mozilla.org/{{ LANG }}/privacy-policy.html">
+            {{ _('Privacy Policy') }}
+          </a>
+          &nbsp;|&nbsp;
+          <a href="http://mozilla.com/about/legal.html">
+            {{ _('Legal Notices') }}
+          </a>
+          &nbsp;|&nbsp;
+          <a href="http://mozilla.com/legal/fraud-report/index.html">
+            {{ _('Report Trademark Abuse') }}
+          </a>
+          {% block extra_footer_links %}{% endblock %}
+        {% endblock %}
+      </p>
+      <p>
+        {% trans %}
+          Except where otherwise
+          <a href="http://mozilla.com/about/legal.html#site">noted</a>,
+          content on this site is licensed under the <br />
+          <a href="http://creativecommons.org/licenses/by-sa/3.0/">
+            Creative Commons Attribution Share-Alike License v3.0
+          </a> or any later version.
+        {% endtrans %}
+      </p>
+    </div>
+
+    {% block lang_switcher %}
+      {% include 'includes/lang_switcher.html' %}
+    {% endblock %}
+
+    <div class="clear"></div>
+  </footer>
+</div>
+
+{% block site_js %}
+  {{ js('common') }}
+  {% include "includes/webtrends_desktop.html" %}
+{% endblock %}
+{% block js %}{% endblock %}
+
 </body>
 </html>

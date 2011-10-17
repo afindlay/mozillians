@@ -1,17 +1,78 @@
 {% extends "base.html" %}
+
+{#
+  This removes the search box from the header, as we put it inside the
+  body of the page instead.
+#}
 {% block search %}{% endblock %}
+
+{% block page_title %}{{ _('Search Results') }}{% endblock %}
+{% block body_id %}search{% endblock %}
+{% block body_classes %}box-content{% endblock %}
+
 {% block main_content %}
-<h1>{{ _('Search') }}</h1>
+  <h1>{{ _('Search') }}</h1>
 
-<form action="" method="GET">  
-  <input type="search" name="q" placeholder="{{ _('Name, IRC Nick, or Email') }}" autofocus>
-  <input type="submit" value="{{ _('Search') }}"/>
-</form>
+  <div class="blue-pastels">
+    <form method="GET" id="search-form" action="{{ url('phonebook.search') }}">
+      <input type="search" name="q" id="q"
+        placeholder="{{ _('Name, IRC Nick, or Email') }}" autofocus
+        value="{% if form.cleaned_data %}{{ form.cleaned_data.q }}{% endif %}">
+      <button type="submit" class="button orange small">
+        {{ _('Search') }}
+      </button>
+    </form>
 
-{% for person in people %}
-    {# TODO We should reuse microformats like Domesday prototype #}
-    <img src="/en-US/user/photo/{{ person.stable_uid }}" /><br />
-    <h2>{{ person.full_name }}</h2>
+    {% if not form.cleaned_data %}
+      {% trans %}
+        <h2>Search For a Mozillian</h2>
 
-{% endfor %}
+        <p>
+          You can search for another Mozillian using their name, email, or
+          nickname.
+        </p>
+      {% endtrans %}
+    {% elif size_exceeded_error %}
+      {% trans %}
+        <h2>Too Many Search Results</h2>
+
+        <p>
+          Sorry, but there were too many results to display.
+          Please make your search more specific.
+        </p>
+      {% endtrans %}
+    {% else %}
+      {% for person in people %}
+        {# TODO We should reuse microformats like Domesday prototype #}
+        <div class="result">
+          <img src="{{ url('phonebook.profile_photo', person.unique_id) }}"
+            alt="{{ _('Profile photo') }}" class="profile-photo">
+
+          <h2><a href="{{url('profile', person.unique_id) }}">
+            {{ person.full_name }}
+          </a></h2>
+
+          {% if person.voucher_unique_id %}
+            <h3 title="{{ _('This user is a vouched Mozillian.') }}">
+              {{ _('Mozillian') }}
+            </h3>
+          {% else %}
+            <h3 title="{{ _('This user has not yet been vouched.') }}">
+              {{ _('Non-Vouched') }}
+            </h3>
+          {% endif %}
+
+          <div class="clear"></div>
+        </div>
+      {% else %}
+        <p id="not-found">
+          {% trans invite=url('invite') %}
+            The Mozillian you are looking for is not in the directory.
+            Please check your spelling or
+            <a href="{{ invite }}">invite this person</a> to create a profile.
+          {% endtrans %}
+        </p>
+      {% endfor %}
+    {% endif %}
+  </div>
 {% endblock %}

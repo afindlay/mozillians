@@ -1,12 +1,116 @@
 {% extends "base.html" %}
 
+{% block body_id %}profile{% endblock %}
+{% block body_classes %}
+    box-content {% if not person.voucher %}pending{% endif %}
+{% endblock %}
+
 {% block main_content %}
-Your profile
-{{ csrf() }}
-Current User: {{ user }}
+  <h1>
+    {% if user.username == person.username %}
+      {{ _('Your Profile') }}
+    {% elif person.voucher %}
+      {{ _('Mozillian Profile') }}
+    {% else %}
+      {{ _('Pending Profile') }}
+    {% endif %}
+  </h1>
 
-Person={{ person }}
+  {% if not person.voucher %}
+    {% if user.username == person.username %}
+      <p id="pending-approval">
+        {% trans profile_url=absolutify(url('profile', user.unique_id)) %}
+          Your profile is waiting for approval. Send this link to someone who
+          is familiar with your contributions and ask them to vouch for you:
+          <br>
+          <em class="underline" title="Your profile URL">
+            {{ profile_url }}
+          </em>
+        {% endtrans %}
+      </p>
+    {% else %}
+      <div id="pending-approval">
+        {% trans vouch='#' %}
+          This profile is waiting for approval. If you can vouch for this
+          person's contributions, please do so.
+        {% endtrans %}
 
-<a href="/user/edit/1">Edit Profile</a>
+        {% if vouch_form %}
+          <form action="{{ url('phonebook.vouch') }}" method="POST"
+            id="vouch-form">
+            {{ csrf() }}
 
+            {{ vouch_form }}
+
+            {% trans name=person.full_name %}
+              <button type="submit" class="button orange small">
+                Vouch for {{ name }}
+              </button>
+            {% endtrans %}
+          </form>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  <div class="clear"></div>
+
+  <div class="blue-pastels vcard h-card">
+    {{ profile_photo(person) }}
+
+    {% if user.username == person.username %}
+      <a href="{{ url('phonebook.edit_profile') }}"
+        class="button blue small" id="edit-profile">
+        {{ _('Edit My Profile') }}
+      </a>
+    {% endif %}
+
+    <div id="profile-info">
+      <h2 class="fn p-name">
+        {{ person.full_name }}
+      </h2>
+
+      <dl>
+        {% if person.username %}
+          <dt>{{ _('Email') }}</dt>
+          <dd><a class="email u-email" href="mailto:{{ person.username }}">
+            {{ person.username }}
+          </a></dd>
+        {% endif %}
+
+        {% if person.irc_nickname %}
+          <dt>{{_('IRC Nickname') }}</dt>
+          <dd><a class="nickname p-nickname" rel="me" href="{{ person.irc_nickname.service_uri }}">
+            {{person.irc_nickname.service_id}}
+          </a></dd>
+        {% endif %}
+
+        {% for uri, service in services.items() %}
+          <dt>{{ service.service_uri }}</dt>
+          <dd><a class="url u-url" rel="me" href="{{ service.service_uri }}">
+            {{ service.service_id }}
+          </a></dd>
+        {% endfor %}
+
+        {% if person.voucher == "Unknown Voucher" %}
+          <!-- This user's voucher is no longer active. -->
+        {% elif person.voucher %}
+          <dt>{{ _('Vouched by') }}</dt>
+          <dd>
+          <a href="{{ url('profile', person.voucher.unique_id) }}"
+            class="vouched">
+              {{ person.voucher.full_name }}
+            </a>
+          </dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    <div class="clear"></div>
+
+    {% if person.biography %}
+      <h3>{{ _('Bio:') }}{# L10n: Biography #}</h3>
+      <p id="bio" class="note p-note">{{ person.biography }}</p>
+    {% endif %}
+</div>
 {% endblock %}

@@ -3,7 +3,7 @@
 #
 import "classes/*.pp"
 
-$PROJ_DIR = "/vagrant"
+$PROJ_DIR = "/home/vagrant/mozillians"
 
 $DB_NAME = "mozillians"
 $DB_USER = "mozillians"
@@ -21,6 +21,7 @@ class dev {
         mysql: before => Class[python];
         python: before => Class[apache];
         apache: before => Class[playdoh_site];
+        memcached:;
         playdoh_site: ;
     }
 }
