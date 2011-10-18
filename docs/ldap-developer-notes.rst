@@ -13,6 +13,10 @@ are added in the second feature release.
 The notes here suggest access and usage patterns that should be robust
 in the face of these changes.
 
+Note that the LDAP server configuration has been moved to a separate project
+along with its design documentation and test suite:
+https://github.com/mozilla/mozillians-ldap
+
 ------------------------------------
 The shape of the DIT
 ------------------------------------
@@ -21,13 +25,19 @@ In LDAP, the DIT (Directory Information Tree) is the large-scale structure
 for the data.
 It supports an unlimited depth of hierarchy, but in this design
 we are keeping things very simple.
-For release 1.0 there is only one branch that matters: the *people* branch:
+For the early releases the only branches that matter are:
 
 * dc=mozillians,dc=org
   * ou=people
+  * ou=tags
+  * ou=tables
+  * ou=system
 
 Every human user of the system will have an entry directly under *ou=people*
-Some system agents also have entries, but they are normally invisible.
+Some system agents have entries under *ou=system* but they are normally invisible.
+
+Tags (groups) live under *ou=tags* and there is a small set of handy lookup tables
+under *ou=tables*
 
 In LDAP terminology, the absolute name of an entry is its DN (Distinguished Name),
 which consists of the catenation of all of the RDNs (Relative Distinguished Names)
