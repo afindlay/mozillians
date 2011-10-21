@@ -54,17 +54,17 @@ People entries
 
 Here is a sample entry:
 
-| dn: uniqueIdentifier=7f3a67u000000,ou=people,dc=mozillians,dc=org
-| objectclass: inetOrgPerson
-| objectclass: person
-| objectclass: mozilliansPerson
-| displayName: Scott Wingfield
-| cn: Scott Wingfield
-| sn: Wingfield
-| uniqueIdentifier: 7f3a67u000000
-| uid: u000000
-| mail: u000000@mozillians.org
-| telephoneNumber: +44 1234 567000
+    dn: uniqueIdentifier=7f3a67u000000,ou=people,dc=mozillians,dc=org
+    objectclass: inetOrgPerson
+    objectclass: person
+    objectclass: mozilliansPerson
+    displayName: Scott Wingfield
+    cn: Scott Wingfield
+    sn: Wingfield
+    uniqueIdentifier: 7f3a67u000000
+    uid: u000000
+    mail: u000000@mozillians.org
+    telephoneNumber: +44 1234 567000
 
 The format above is LDIF - the LDAP Data Interchange Format (RFC2849).
 The first line gives the DN of the entry.
@@ -88,6 +88,13 @@ many places, and is very hard to hide).
 Note that the *uniqueIdentifier* attribute in the entry must match the
 value used in the DN.
 
+There are also several *operational* attributes, containing data such as the DN
+of the last user to modify the entry, its creation date etc.
+These attributes are normally only included in search results if explicitly requested.
+
+One operational attribute that can be very useful is *memberOf* which is maintained
+by the OpenLDAP server: it lists the groups that the user is a member of. This attribute
+can be used in searches but it cannot be modified directly.
 
 ..........................................
 Multi-valued attributes
@@ -95,20 +102,20 @@ Multi-valued attributes
 
 Most attributes in LDAP are able to store multiple values, e.g.:
 
-| dn: uniqueIdentifier=ab04bc7a8943fa,ou=people,dc=mozillians,dc=org
-| objectclass: inetOrgPerson
-| objectclass: person
-| objectclass: mozilliansPerson
-| displayName: Andrew Findlay
-| cn: A Findlay
-| cn: Andrew Findlay
-| cn: Findlay Andrew
-| cn: Dr Andrew J Findlay BSc PhD MIET CEng
-| sn: Findlay
-| uniqueIdentifier: ab04bc7a8943fa
-| uid: ajf
-| mail: andrew.findlay@skills-1st.co.uk
-| mail: andrew@findlay.org
+    dn: uniqueIdentifier=ab04bc7a8943fa,ou=people,dc=mozillians,dc=org
+    objectclass: inetOrgPerson
+    objectclass: person
+    objectclass: mozilliansPerson
+    displayName: Andrew Findlay
+    cn: A Findlay
+    cn: Andrew Findlay
+    cn: Findlay Andrew
+    cn: Dr Andrew J Findlay BSc PhD MIET CEng
+    sn: Findlay
+    uniqueIdentifier: ab04bc7a8943fa
+    uid: ajf
+    mail: andrew.findlay@skills-1st.co.uk
+    mail: andrew@findlay.org
 
 This is perhaps an extreme example, but it server to illustrate the sort of data
 that you might find.
@@ -126,10 +133,11 @@ The problem is solved by the *displayName* attribute, which is normally set to
 whatever name form the person prefers to known as.
 *displayName* is only allowed to have a single value.
 
-Note that in this example there are two mali addresses.
+Note that in this example there are two mail addresses.
 This is not generally a good idea, as there is no way to indicate what each one
 should be used for.
-mozillians.org will address the multiple-accounts issue in a later release.
+The multiple-accounts issue is better handled using *mozilliansLink* entries under
+the user's main entry. See the LDAP design doc for more details.
 
 ..........................................
 Consequences of access-control
@@ -455,6 +463,139 @@ To do this, the existing member finds the entry for the new user and writes
 *their own DN* into the *mozilliansVouchedBy* attribute.
 It is not possible to write any other value in this attribute, which preserves
 accountability by showing who vouched for each member.
+
+.. _using-groups:
+
+---------------------------------------------------
+Using Groups
+---------------------------------------------------
+
+Groups allow people to tag themselves as being interested in a particular topic,
+having a particular skill, etc.
+
+Most groups are open for anyone to join and leave as they wish, though it is also
+possible to create *managed* groups which can only be changed by members of some defined
+management group.
+
+Group entries look like this:
+
+```
+    dn: uniqueIdentifier=ab83c301007f,ou=tags,dc=mozillians,dc=org
+    objectClass: mozilliansGroup
+    uniqueIdentifier: ab83c301007f
+    owner: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
+    cn: Dinosaur Food Group
+    cn: Dinofood
+    displayName: Dinosaur Food Group
+    description: We provide food for the dinosaur. We also research new flavours. Anyone may join this group. (This group used to be called Dinofood)
+    member: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
+    member: uniqueIdentifier=7f3a67u000003,ou=people,dc=mozillians,dc=org
+    member: uniqueIdentifier=7f3a67u000010,ou=people,dc=mozillians,dc=org
+    member: uniqueIdentifier=7f3a67u000065,ou=people,dc=mozillians,dc=org
+    member: uniqueIdentifier=7f3a67u000083,ou=people,dc=mozillians,dc=org
+```
+
+Like person entries, the DN is formed using a meaningless *uniqueIdentifier*
+attribute. This allows the group owner to change the name of the group without
+affecting its DN.
+
+Group attributes other than *member* are normally readable by everyone,
+including anonymous users.
+
+Groups have owners - normally the Mozillian that created them in the first place.
+The owner can change the name and description of the group.
+There can be multiple owners, and owners may be groups.
+
+.........................................
+Creating new groups
+.........................................
+
+All Mozillians can create new groups.
+The requirements are:
+
+#. *objectclass*, *uniqueIdentifier*, *cn* and *displayName* are mandatory attributes.
+#. The *uniqueIdentifier* value must be unique across the entire system.
+#. The value used for *displayName* must also appear as a value of *cn* -
+we use *cn* for searches and *displayName* when displaying the group.
+Ideally this name should be short, as it will appear in a list on members' pages.
+#. *description* is highly desirable.
+#. The *owner* attribute should be set to the creator's own DN when the entry is created.
+It may be changed later if desired.
+
+.........................................
+Finding groups
+.........................................
+
+To find a group by name, do a subtree search from ou=tags,dc=mozillians,dc=org
+with a filter of the form:
+
+    (&(cn=somegroupname)(objectclass=mozilliansGroup))
+
+where *somegroupname* may contain wildcards (asterisks) if desired -
+but see **Handling search strings** below for some cautions.
+
+When doing this search, be careful to only request the attributes that you need.
+You will get the DN of the group anyway, so in most cases it is enough to
+request *displayName* and *description*
+
+.........................................
+Joining and leaving groups
+.........................................
+
+Mozillians and Applicants can join most groups directly:
+
+#. Find the DN of the desired group.
+#. Add the user's DN as a new value of the *member* attribute.
+
+To leave a group, simply delete the user's DN from the *member* attribute.
+
+In both cases it is essential to request a modification of a specific value - you cannot
+replace the entire attribute.
+
+.........................................
+Listing the groups that a user belongs to
+.........................................
+
+The obvious approach is to inspect the *memberOf* attribute in the user entry,
+but then you have to follow each DN to get the group details.
+There is a better way:
+
+Do a subtree search from ou=tags,dc=mozillians,dc=org with a filter of the form:
+
+	(&(member=<user DN>)((objectclass=mozilliansGroup))
+
+Make sure that you request only the attributes that you need - probably just
+*displayName* and *description*
+
+You will get the complete list of groups that the user is a member of,
+along with the name and description of each.
+
+Note that if the user belongs to a very large number of groups you may
+hit a sizelimit here.
+
+.........................................
+Finding users that belong to specific groups
+.........................................
+
+#. Find the DN of the desired group.
+#. Issue a subtree search from ou=people,dc=mozillians,dc=org with a filter of the form:
+
+	(&(memberOf=<group DN>)(objectclass=inetOrgPerson))
+
+.........................................
+Controlling groups
+.........................................
+
+If it is necessary to control the membership of a particular group it should be
+given a *manager* attribute. This is a DN-valued attribute that points to another
+group. Only members of this 'management group' will be able to change membership of
+the managed group. Members of the management group can also change the naming and
+descriptive attributes of the managed group.
+
+Is is possible for a group to be its own management group. In that case, any member
+can add and delete members but non-members cannot add themselves.
+
+Note that the *owner* of a group also has complete control over it.
 
 .. _charset-hazards:
 
