@@ -54,17 +54,18 @@ People entries
 
 Here is a sample entry:
 
-    dn: uniqueIdentifier=7f3a67u000000,ou=people,dc=mozillians,dc=org
-    objectclass: inetOrgPerson
-    objectclass: person
-    objectclass: mozilliansPerson
-    displayName: Scott Wingfield
-    cn: Scott Wingfield
-    sn: Wingfield
-    uniqueIdentifier: 7f3a67u000000
-    uid: u000000
-    mail: u000000@mozillians.org
-    telephoneNumber: +44 1234 567000
+```dn: uniqueIdentifier=7f3a67u000000,ou=people,dc=mozillians,dc=org
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: mozilliansPerson
+displayName: Scott Wingfield
+cn: Scott Wingfield
+sn: Wingfield
+uniqueIdentifier: 7f3a67u000000
+uid: u000000
+mail: u000000@mozillians.org
+telephoneNumber: +44 1234 567000
+```
 
 The format above is LDIF - the LDAP Data Interchange Format (RFC2849).
 The first line gives the DN of the entry.
@@ -102,20 +103,21 @@ Multi-valued attributes
 
 Most attributes in LDAP are able to store multiple values, e.g.:
 
-    dn: uniqueIdentifier=ab04bc7a8943fa,ou=people,dc=mozillians,dc=org
-    objectclass: inetOrgPerson
-    objectclass: person
-    objectclass: mozilliansPerson
-    displayName: Andrew Findlay
-    cn: A Findlay
-    cn: Andrew Findlay
-    cn: Findlay Andrew
-    cn: Dr Andrew J Findlay BSc PhD MIET CEng
-    sn: Findlay
-    uniqueIdentifier: ab04bc7a8943fa
-    uid: ajf
-    mail: andrew.findlay@skills-1st.co.uk
-    mail: andrew@findlay.org
+```dn: uniqueIdentifier=ab04bc7a8943fa,ou=people,dc=mozillians,dc=org
+objectclass: inetOrgPerson
+objectclass: person
+objectclass: mozilliansPerson
+displayName: Andrew Findlay
+cn: A Findlay
+cn: Andrew Findlay
+cn: Findlay Andrew
+cn: Dr Andrew J Findlay BSc PhD MIET CEng
+sn: Findlay
+uniqueIdentifier: ab04bc7a8943fa
+uid: ajf
+mail: andrew.findlay@skills-1st.co.uk
+mail: andrew@findlay.org
+```
 
 This is perhaps an extreme example, but it server to illustrate the sort of data
 that you might find.
@@ -174,12 +176,12 @@ The main ones that we are concerned with are:
     search and match even when people add hyphens in different places.
     Telephone numbers must always be stored in full international format:
 
-    +44 1628 782565
-    +1 650 903 0800
+* +44 1628 782565
+* +1 650 903 0800
 
     Attempts to be 'helpful' by adding in local-use-only prefixes should be avoided:
 
-    +44 (0) 1628 782565
+* +44 (0) 1628 782565
 
     This is bad because the interpretation is ambiguous and often country-specific.
 
@@ -480,19 +482,19 @@ management group.
 Group entries look like this:
 
 ```
-    dn: uniqueIdentifier=ab83c301007f,ou=tags,dc=mozillians,dc=org
-    objectClass: mozilliansGroup
-    uniqueIdentifier: ab83c301007f
-    owner: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
-    cn: Dinosaur Food Group
-    cn: Dinofood
-    displayName: Dinosaur Food Group
-    description: We provide food for the dinosaur. We also research new flavours. Anyone may join this group. (This group used to be called Dinofood)
-    member: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
-    member: uniqueIdentifier=7f3a67u000003,ou=people,dc=mozillians,dc=org
-    member: uniqueIdentifier=7f3a67u000010,ou=people,dc=mozillians,dc=org
-    member: uniqueIdentifier=7f3a67u000065,ou=people,dc=mozillians,dc=org
-    member: uniqueIdentifier=7f3a67u000083,ou=people,dc=mozillians,dc=org
+dn: uniqueIdentifier=ab83c301007f,ou=tags,dc=mozillians,dc=org
+objectClass: mozilliansGroup
+uniqueIdentifier: ab83c301007f
+owner: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
+cn: Dinosaur Food Group
+cn: Dinofood
+displayName: Dinosaur Food Group
+description: We provide food for the dinosaur. We also research new flavours. Anyone may join this group. (This group used to be called Dinofood)
+member: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
+member: uniqueIdentifier=7f3a67u000003,ou=people,dc=mozillians,dc=org
+member: uniqueIdentifier=7f3a67u000010,ou=people,dc=mozillians,dc=org
+member: uniqueIdentifier=7f3a67u000065,ou=people,dc=mozillians,dc=org
+member: uniqueIdentifier=7f3a67u000083,ou=people,dc=mozillians,dc=org
 ```
 
 Like person entries, the DN is formed using a meaningless *uniqueIdentifier*
@@ -516,11 +518,11 @@ The requirements are:
 #. *objectclass*, *uniqueIdentifier*, *cn* and *displayName* are mandatory attributes.
 #. The *uniqueIdentifier* value must be unique across the entire system.
 #. The value used for *displayName* must also appear as a value of *cn* -
-we use *cn* for searches and *displayName* when displaying the group.
-Ideally this name should be short, as it will appear in a list on members' pages.
+   we use *cn* for searches and *displayName* when displaying the group.
+   Ideally this name should be short, as it will appear in a list on members' pages.
 #. *description* is highly desirable.
 #. The *owner* attribute should be set to the creator's own DN when the entry is created.
-It may be changed later if desired.
+   It may be changed later if desired.
 
 .........................................
 Finding groups
@@ -593,9 +595,12 @@ the managed group. Members of the management group can also change the naming an
 descriptive attributes of the managed group.
 
 Is is possible for a group to be its own management group. In that case, any member
-can add and delete members but non-members cannot add themselves.
+can add and delete members but non-members cannot add themselves. Groups that manage
+other groups are obvious candidates for being self-managed.
 
 Note that the *owner* of a group also has complete control over it.
+The main difference between a group *owner* and a group *manager* is that the
+existence of the *manager* attribute prevents users from self-subscribing.
 
 .. _charset-hazards:
 
