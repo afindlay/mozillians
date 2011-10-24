@@ -54,18 +54,17 @@ People entries
 
 Here is a sample entry:
 
-```dn: uniqueIdentifier=7f3a67u000000,ou=people,dc=mozillians,dc=org
-objectclass: inetOrgPerson
-objectclass: person
-objectclass: mozilliansPerson
-displayName: Scott Wingfield
-cn: Scott Wingfield
-sn: Wingfield
-uniqueIdentifier: 7f3a67u000000
-uid: u000000
-mail: u000000@mozillians.org
-telephoneNumber: +44 1234 567000
-```
+	dn: uniqueIdentifier=7f3a67u000000,ou=people,dc=mozillians,dc=org
+	objectclass: inetOrgPerson
+	objectclass: person
+	objectclass: mozilliansPerson
+	displayName: Scott Wingfield
+	cn: Scott Wingfield
+	sn: Wingfield
+	uniqueIdentifier: 7f3a67u000000
+	uid: u000000
+	mail: u000000@mozillians.org
+	telephoneNumber: +44 1234 567000
 
 The format above is LDIF - the LDAP Data Interchange Format (RFC2849).
 The first line gives the DN of the entry.
@@ -103,21 +102,20 @@ Multi-valued attributes
 
 Most attributes in LDAP are able to store multiple values, e.g.:
 
-```dn: uniqueIdentifier=ab04bc7a8943fa,ou=people,dc=mozillians,dc=org
-objectclass: inetOrgPerson
-objectclass: person
-objectclass: mozilliansPerson
-displayName: Andrew Findlay
-cn: A Findlay
-cn: Andrew Findlay
-cn: Findlay Andrew
-cn: Dr Andrew J Findlay BSc PhD MIET CEng
-sn: Findlay
-uniqueIdentifier: ab04bc7a8943fa
-uid: ajf
-mail: andrew.findlay@skills-1st.co.uk
-mail: andrew@findlay.org
-```
+	dn: uniqueIdentifier=ab04bc7a8943fa,ou=people,dc=mozillians,dc=org
+	objectclass: inetOrgPerson
+	objectclass: person
+	objectclass: mozilliansPerson
+	displayName: Andrew Findlay
+	cn: A Findlay
+	cn: Andrew Findlay
+	cn: Findlay Andrew
+	cn: Dr Andrew J Findlay BSc PhD MIET CEng
+	sn: Findlay
+	uniqueIdentifier: ab04bc7a8943fa
+	uid: ajf
+	mail: andrew.findlay@skills-1st.co.uk
+	mail: andrew@findlay.org
 
 This is perhaps an extreme example, but it server to illustrate the sort of data
 that you might find.
@@ -481,21 +479,19 @@ management group.
 
 Group entries look like this:
 
-```
-dn: uniqueIdentifier=ab83c301007f,ou=tags,dc=mozillians,dc=org
-objectClass: mozilliansGroup
-uniqueIdentifier: ab83c301007f
-owner: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
-cn: Dinosaur Food Group
-cn: Dinofood
-displayName: Dinosaur Food Group
-description: We provide food for the dinosaur. We also research new flavours. Anyone may join this group. (This group used to be called Dinofood)
-member: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
-member: uniqueIdentifier=7f3a67u000003,ou=people,dc=mozillians,dc=org
-member: uniqueIdentifier=7f3a67u000010,ou=people,dc=mozillians,dc=org
-member: uniqueIdentifier=7f3a67u000065,ou=people,dc=mozillians,dc=org
-member: uniqueIdentifier=7f3a67u000083,ou=people,dc=mozillians,dc=org
-```
+	dn: uniqueIdentifier=ab83c301007f,ou=tags,dc=mozillians,dc=org
+	objectClass: mozilliansGroup
+	uniqueIdentifier: ab83c301007f
+	owner: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
+	cn: Dinosaur Food Group
+	cn: Dinofood
+	displayName: Dinosaur Food Group
+	description: We provide food for the dinosaur. We also research new flavours. Anyone may join this group. (This group used to be called Dinofood)
+	member: uniqueIdentifier=7f3a67u000002,ou=people,dc=mozillians,dc=org
+	member: uniqueIdentifier=7f3a67u000003,ou=people,dc=mozillians,dc=org
+	member: uniqueIdentifier=7f3a67u000010,ou=people,dc=mozillians,dc=org
+	member: uniqueIdentifier=7f3a67u000065,ou=people,dc=mozillians,dc=org
+	member: uniqueIdentifier=7f3a67u000083,ou=people,dc=mozillians,dc=org
 
 Like person entries, the DN is formed using a meaningless *uniqueIdentifier*
 attribute. This allows the group owner to change the name of the group without
