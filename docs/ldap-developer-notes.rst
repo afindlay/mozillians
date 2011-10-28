@@ -407,6 +407,10 @@ and currently includes:
 * telephoneNumber
 * jpegPhoto
 * description - this would hold the Bio
+* c (country code)
+* st (state or province name)
+* l (locality)
+* postalCode
 
 In addition the user can modify their own password: see below for details.
 
@@ -416,6 +420,17 @@ In other respects, standard LDAP practice applies.
 
 LDAP does support language-specific values for most attributes,
 but it is suggested that these should not be used for mozillians.org version 1.0.
+
+The three attributes *c*, *st*, *l* together make up the user's location.
+*c* must be a valid ISO-3166 2-letter country code. These are not always
+obvious (e.g. gb rather than uk for United Kingdom) so the UI should take care
+to help people choose the right one.
+*st* may not be much use outside the USA.
+*l* is a catch-all for any reasonable level of 'locality' - city, suburb, village,
+area etc.
+*postalCode* is a good shortcut in many countries, though the level of precision
+may be too great for some people and too little for others.
+
 
 .........................................
 Changing passwords
@@ -512,6 +527,8 @@ All Mozillians can create new groups.
 The requirements are:
 
 #. *objectclass*, *uniqueIdentifier*, *cn* and *displayName* are mandatory attributes.
+#. *displayName* is the current name of the group. This must be unique across all groups,
+   and the LDAP server enforces this.
 #. The *uniqueIdentifier* value must be unique across the entire system.
 #. The value used for *displayName* must also appear as a value of *cn* -
    we use *cn* for searches and *displayName* when displaying the group.
