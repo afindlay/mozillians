@@ -411,6 +411,8 @@ and currently includes:
 * st (state or province name)
 * l (locality)
 * postalCode
+* labeledURI - pointers to websites
+* mozilliansDateStarted
 
 In addition the user can modify their own password: see below for details.
 
@@ -431,6 +433,23 @@ area etc.
 *postalCode* is a good shortcut in many countries, though the level of precision
 may be too great for some people and too little for others.
 
+labeledURI is defined in RFC 2079. It allows multiple values.
+Each value is a fully-encoded URL followed by a space and a text description.
+Ignore what RFC 2079 says about the T.61 character set: the encoded URL is 7-bit ASCII
+by definition, and the text string should be in UTF-8. e.g.:
+
+	http://www.andrew.findlay.org/ Andrew's personal website
+
+mozilliansDateStarted records the date when this person started actively contributing
+to the Mozilla project. The single value is in Generalized Time format.
+The original requirement was for a 'year started' attribute,
+so allowing millisecond precision may seem a bit over the top! The advantage of using
+this format is that it is reliably comparable with other dates and times in the LDAP store.
+To represent a year it is suggested that 0 seconds past midnight UTC on 1st January should be used:
+
+	201101010000Z
+
+It is easy to expand this to month precision if desired.
 
 .........................................
 Changing passwords
